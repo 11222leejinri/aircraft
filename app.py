@@ -7,155 +7,167 @@ import plotly.graph_objects as go
 # 페이지 설정
 # -------------------------------------------------
 st.set_page_config(
-    page_title="항공기 엔진 상태 모니터링 시스템",
+    page_title="AIRCRAFT ENGINE HEALTH MONITORING SYSTEM",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
 # -------------------------------------------------
-# 프리미엄 우주항공 MCC 스타일 인라인 CSS
+# 엔지니어링 대시보드 전용 고대비 CSS 설정
 # -------------------------------------------------
 st.markdown("""
 <style>
-/* 전체 심우주 다크 테마 배경 */
+/* 시스템 기본 서체 및 배경 (Tactical Dark Mode) */
 .stApp {
-    background-color: #080B11; 
-    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    background-color: #0B0F19; 
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 .block-container {
-    padding-top: 2.5rem;
-    padding-bottom: 3rem;
+    padding-top: 2.0rem;
+    padding-bottom: 2.0rem;
 }
 
-/* 메인 타이틀 */
+/* 시스템 메인 타이틀 */
 .main-title {
     text-align: center;
     color: #FFFFFF;
-    font-size: 38px;
-    font-weight: 800;
-    letter-spacing: 2px;
-    margin-bottom: 8px;
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
 }
 
-/* 서브 타이틀 */
+/* 시스템 서브 타이틀 */
 .sub-title {
     text-align: center;
     color: #64748B;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 500;
-    letter-spacing: 1px;
-    margin-bottom: 35px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 30px;
 }
 
-/* 실시간 시스템 상단 바 */
+/* 시스템 상태 표시 바 (Telemetry Status Bar) */
 .system-box {
-    background: linear-gradient(90deg, rgba(0, 210, 255, 0.03) 0%, rgba(0, 210, 255, 0.15) 50%, rgba(0, 210, 255, 0.03) 100%);
-    border-top: 1px solid rgba(0, 210, 255, 0.3);
-    border-bottom: 1px solid rgba(0, 210, 255, 0.3);
-    padding: 10px;
-    margin-bottom: 45px;
-    color: #00D2FF;
+    background-color: #0F172A;
+    border: 1px solid #1E293B;
+    border-left: 4px solid #00E5FF;
+    padding: 12px;
+    margin-bottom: 40px;
+    color: #00E5FF;
     text-align: center;
-    font-weight: 700;
-    letter-spacing: 2px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
     font-size: 13px;
 }
 
-/* 세련된 진단 결과 카드 레이아웃 */
+/* 엔지니어링 분석 결과 카드 */
 .report-card {
-    background: #111622;
-    border: 1px solid #1E2638;
-    border-radius: 12px;
-    padding: 30px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
-    margin-top: 10px;
+    background-color: #0F172A;
+    border: 1px solid #1E293B;
+    border-radius: 6px;
+    padding: 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .report-card h2 {
     color: #FFFFFF;
-    font-size: 22px;
+    font-size: 18px;
     font-weight: 700;
     margin-top: 0;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #2A354F;
-    padding-bottom: 12px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 10px;
+    letter-spacing: 1px;
 }
 
-/* 내부 그리드 아이템 정렬 */
+/* 분석 데이터 그리드 컨테이너 */
 .grid-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    gap: 15px;
 }
 
 .grid-item {
-    background: #182030;
-    padding: 15px 20px;
-    border-radius: 8px;
-    border: 1px solid #243147;
+    background-color: #1E293B;
+    padding: 12px 18px;
+    border-radius: 4px;
+    border: 1px solid #334155;
 }
 
 .report-label {
     color: #94A3B8;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .report-value {
     color: #FFFFFF;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
 }
 
-/* 권장 조치사항은 가로로 길게 배치 */
+/* 권장 조치사항 전용 확장 레이아웃 */
 .grid-full {
     grid-column: span 2;
-    background: #1E1B29;
+    background-color: #1A1625;
     border: 1px solid #3B2A4A;
 }
 
-/* 미래지향적 제어 버튼 */
+/* 시스템 제어 명령 버튼 (Command Button) */
 .stButton button {
     width: 100%;
-    height: 55px;
-    background: linear-gradient(135deg, #0052D4 0%, #4364F7 50%, #6FB1FC 100%);
+    height: 50px;
+    background-color: #0284C7;
+    color: #FFFFFF;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+    margin-top: 10px;
+}
+
+.stButton button:hover {
+    background-color: #0369A1;
+    color: #FFFFFF;
+}
+
+.stButton button:active {
+    background-color: #075985;
+    color: #FFFFFF;
+}
+
+/* 파라미터 슬라이더 제어 */
+.stSlider label {
+    color: #E2E8F0 !important;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+}
+
+/* 섹션 타이틀 */
+h3 {
     color: #FFFFFF;
     font-size: 16px;
     font-weight: 700;
     letter-spacing: 1px;
-    border: none;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(67, 100, 247, 0.4);
-    transition: all 0.3s ease;
-    margin-top: 20px;
-}
-
-.stButton button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(67, 100, 247, 0.6);
-    background: linear-gradient(135deg, #0052D4 0%, #4D73FF 50%, #82BFFF 100%);
-}
-
-/* 슬라이더 스타일 커스텀 */
-.stSlider label {
-    color: #CBD5E1 !important;
-    font-weight: 500;
-    font-size: 13px;
-}
-
-h2, h3 {
-    color: #FFFFFF;
-    font-weight: 700;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # -------------------------------------------------
-# AI 모델 불러오기
+# 예측 모델 및 스케일러 파일 로드
 # -------------------------------------------------
 try:
     모델 = joblib.load("aircraft_model.pkl")
@@ -163,76 +175,75 @@ try:
     model_loaded = True
 except:
     model_loaded = False
-    st.error("⚠️ 모델 파일을 찾을 수 없습니다. (aircraft_model.pkl, aircraft_scaler.pkl)")
+    st.error("SYSTEM ERROR: 핵심 모델 파일(aircraft_model.pkl, aircraft_scaler.pkl)을 로드할 수 없습니다.")
 
 # -------------------------------------------------
-# 대시보드 헤더
+# 대시보드 상단 헤더 영역
 # -------------------------------------------------
 st.markdown("""
-<div class='main-title'>항공기 엔지니어링 텔레메트리 시스템</div>
-<div class='sub-title'>인공지능 기반 예측 정비 대시보드 · NASA C-MAPSS 데이터셋</div>
-<div class='system-box'>원격 제어 상태 : 실시간 모니터링 및 시퀀스 대기 중</div>
+<div class='main-title'>AIRCRAFT ENGINE HEALTH MONITORING SYSTEM</div>
+<div class='sub-title'>Predictive Maintenance & Prognostics Telemetry Dashboard · NASA C-MAPSS Core</div>
+<div class='system-box'>TELEMETRY STATUS : CONNECTED & ON-LINE</div>
 """, unsafe_allow_html=True)
 
 # -------------------------------------------------
-# 입력 영역 (엔진 파라미터 제어)
+# 입력 파라미터 제어 영역
 # -------------------------------------------------
-st.markdown("<h3>⚙️ 엔진 운전 매개변수 설정</h3>", unsafe_allow_html=True)
-st.markdown("<br>", unsafe_allow_html=True)
+st.markdown("<h3>ENGINE OPERATIONAL PARAMETERS</h3>", unsafe_allow_html=True)
 
 col1, col2 = st.columns(2)
 
 with col1:
-    운전사이클 = st.slider("누적 운전 사이클 (Operating Cycle)", 1, 400, 150)
-    센서2 = st.slider("센서 2 (저압 압축기 출구 온도)", 630.0, 650.0, 641.0)
-    센서3 = st.slider("센서 3 (고압 압축기 출구 온도)", 1500.0, 1700.0, 1580.0)
-    센서4 = st.slider("센서 4 (저압 터빈 출구 온도)", 1300.0, 1450.0, 1400.0)
-    센서7 = st.slider("센서 7 (고압 압축기 출구 압력)", 500.0, 600.0, 550.0)
+    운전사이클 = st.slider("누적 운전 사이클 (TOTAL OPERATING CYCLES)", 1, 400, 150)
+    센서2 = st.slider("센서 02 (LPC OUTLET TEMPERATURE)", 630.0, 650.0, 641.0)
+    센서3 = st.slider("센서 03 (HPC OUTLET TEMPERATURE)", 1500.0, 1700.0, 1580.0)
+    센서4 = st.slider("센서 04 (LPT OUTLET TEMPERATURE)", 1300.0, 1450.0, 1400.0)
+    센서7 = st.slider("센서 07 (HPC OUTLET PRESSURE)", 500.0, 600.0, 550.0)
 
 with col2:
-    센서11 = st.slider("센서 11 (고압 터빈 속도)", 2300.0, 2500.0, 2400.0)
-    센서12 = st.slider("센서 12 (바이패스 덕트 압력)", 8000.0, 8500.0, 8150.0)
-    센서15 = st.slider("센서 15 (바이패스 비율)", 7.0, 10.0, 8.5)
-    센서20 = st.slider("센서 20 (고압 터빈 블리드 유량)", 35.0, 50.0, 40.0)
-    센서21 = st.slider("센서 21 (저압 터빈 블리드 유량)", 20.0, 30.0, 23.0)
+    센서11 = st.slider("센서 11 (HPT ROTOR SPEED)", 2300.0, 2500.0, 2400.0)
+    센서12 = st.slider("센서 12 (BYPASS DUCT PRESSURE)", 8000.0, 8500.0, 8150.0)
+    센서15 = st.slider("센서 15 (BYPASS RATIO)", 7.0, 10.0, 8.5)
+    센서20 = st.slider("센서 20 (HPT BLEED FLOW)", 35.0, 50.0, 40.0)
+    센서21 = st.slider("센서 21 (LPT BLEED FLOW)", 20.0, 30.0, 23.0)
 
 # -------------------------------------------------
-# 센서 레이더 차트
+# 센서 레이더 차트 분석 시각화
 # -------------------------------------------------
-st.markdown("<br><hr style='border-color: #1E2638;'><br>", unsafe_allow_html=True)
-st.markdown("<h3>🛰️ 센서 어레이 프로필 분석</h3>", unsafe_allow_html=True)
+st.markdown("<br><hr style='border-color: #1E293B;'><br>", unsafe_allow_html=True)
+st.markdown("<h3>SENSOR ARRAY VECTOR ANALYSIS</h3>", unsafe_allow_html=True)
 
 radar = go.Figure()
 radar.add_trace(
     go.Scatterpolar(
         r=[센서2, 센서3/10, 센서4/10, 센서7, 센서11/10, 센서12/100, 센서15*50, 센서20*10, 센서21*10],
-        theta=["센서2", "센서3", "센서4", "센서7", "센서11", "센서12", "센서15", "센서20", "센서21"],
+        theta=["S02", "S03", "S04", "S07", "S11", "S12", "S15", "S20", "S21"],
         fill='toself',
-        fillcolor='rgba(0, 210, 255, 0.1)',
-        line=dict(color='#00D2FF', width=2),
-        name="실시간 원격 데이터"
+        fillcolor='rgba(0, 229, 255, 0.05)',
+        line=dict(color='#00E5FF', width=1.5),
+        name="실시간 원격 측정 데이터"
     )
 )
 
 radar.update_layout(
-    paper_bgcolor="#080B11",
-    plot_bgcolor="#080B11",
-    font=dict(color="#94A3B8", size=12),
+    paper_bgcolor="#0B0F19",
+    plot_bgcolor="#0B0F19",
+    font=dict(color="#94A3B8", size=11),
     polar=dict(
-        bgcolor="#111622",
-        radialaxis=dict(visible=True, gridcolor="#1E2638", linecolor="#243147"),
-        angularaxis=dict(gridcolor="#1E2638", linecolor="#243147")
+        bgcolor="#0F172A",
+        radialaxis=dict(visible=True, gridcolor="#1E293B", linecolor="#334155", tickfont=dict(size=9)),
+        angularaxis=dict(gridcolor="#1E293B", linecolor="#334155")
     ),
     margin=dict(t=30, b=30, l=30, r=30)
 )
 st.plotly_chart(radar, use_container_width=True)
 
 # -------------------------------------------------
-# 진단 시퀀스 가동 및 결과 출력
+# 진단 시퀀스 가동 및 데이터 출력
 # -------------------------------------------------
 st.markdown("<br>", unsafe_allow_html=True)
 
-if st.button("AI 진단 시퀀스 시작 (RUN DIAGNOSTICS)"):
+if st.button("EXECUTE DIAGNOSTIC SEQUENCE"):
     
     if model_loaded:
         입력값 = pd.DataFrame(
@@ -246,36 +257,36 @@ if st.button("AI 진단 시퀀스 시작 (RUN DIAGNOSTICS)"):
         except:
             확률 = 0.5
     else:
-        # 모델 부재 시 예시 더미 데이터 처리
+        # 테스트용 예외 더미 처리
         결과 = 1 if 운전사이클 > 200 else 0
         확률 = 0.51 if 운전사이클 == 150 else 운전사이클 / 400.0
 
-    st.markdown("<br><hr style='border-color: #1E2638;'><br>", unsafe_allow_html=True)
-    st.markdown("<h3>📊 시스템 진단 결과 리포트</h3>", unsafe_allow_html=True)
+    st.markdown("<br><hr style='border-color: #1E293B;'><br>", unsafe_allow_html=True)
+    st.markdown("<h3>SYSTEM DIAGNOSTIC RESULTS</h3>", unsafe_allow_html=True)
     
     res_col1, res_col2 = st.columns([1.1, 1])
 
     with res_col1:
-        # 게이지 차트 스타일 고도화
+        # 미니멀 고시인성 게이지 차트
         gauge = go.Figure(
             go.Indicator(
                 mode="gauge+number",
                 value=확률 * 100,
-                number={'suffix': "%", 'font': {'color': '#FFFFFF', 'size': 55, 'weight': 'bold'}},
-                title={'text': "엔진 고장 발생 위험도", 'font': {'color': '#94A3B8', 'size': 15}},
+                number={'suffix': "%", 'font': {'color': '#FFFFFF', 'size': 50, 'weight': 'bold'}},
+                title={'text': "결함 발생 확률 계수", 'font': {'color': '#94A3B8', 'size': 13}},
                 gauge={
-                    'axis': {'range': [0, 100], 'tickwidth': 1, 'tickcolor': "#475569"},
+                    'axis': {'range': [0, 100], 'tickwidth': 1, 'tickcolor': "#475569", 'tickfont': dict(size=10)},
                     'bar': {'color': "rgba(0,0,0,0)"}, 
-                    'bgcolor': "#111622",
+                    'bgcolor': "#0F172A",
                     'borderwidth': 1,
-                    'bordercolor': "#1E2638",
+                    'bordercolor': "#1E293B",
                     'steps': [
-                        {'range': [0, 40], 'color': '#10B981'},   # 안정 (초록)
-                        {'range': [40, 70], 'color': '#F59E0B'},  # 유의 (노랑)
-                        {'range': [70, 100], 'color': '#EF4444'}  # 위험 (빨강)
+                        {'range': [0, 40], 'color': '#10B981'},   # 정상 운용 자산
+                        {'range': [40, 70], 'color': '#F59E0B'},  # 집중 모니터링 대상
+                        {'range': [70, 100], 'color': '#EF4444'}  # 즉시 정비 대상
                     ],
                     'threshold': {
-                        'line': {'color': "#FFFFFF", 'width': 4},
+                        'line': {'color': "#FFFFFF", 'width': 3},
                         'thickness': 0.8,
                         'value': 확률 * 100
                     }
@@ -283,46 +294,46 @@ if st.button("AI 진단 시퀀스 시작 (RUN DIAGNOSTICS)"):
             )
         )
         gauge.update_layout(
-            paper_bgcolor="#080B11",
+            paper_bgcolor="#0B0F19",
             font=dict(color="white"),
             margin=dict(t=40, b=10, l=10, r=10),
-            height=280
+            height=260
         )
         st.plotly_chart(gauge, use_container_width=True)
 
     with res_col2:
-        # 상태에 따른 한글 텍스트 및 동적 컬러 정의
+        # 결과 코드 분기 처리
         if 결과 == 1:
-            상태 = "<span style='color:#EF4444;'>정비 필요 (CRITICAL)</span>"
-            권고 = "<span style='color:#FCA5A5;'>⚠️ 경고: 엔진 결함 확산 가능성이 높습니다. 즉각적인 정비 및 정밀 점검 조치를 수행하십시오.</span>"
+            상태 = "<span style='color:#EF4444;'>정비 요망 (CRITICAL)</span>"
+            권고 = "<span style='color:#FCA5A5;'>경고: 해당 자산의 한계 성능 수치 초과 및 결함 징후가 검출되었습니다. 시퀀스를 중단하고 즉각적인 비계획 정비 및 분해 점검을 수행하십시오.</span>"
         else:
             상태 = "<span style='color:#10B981;'>정상 구동 (NOMINAL)</span>"
-            권고 = "엔진이 허용 표준 오차 범위 내에서 안정적으로 작동하고 있습니다. 주기적인 정비 일정을 유지하십시오."
+            권고 = "자산의 내부 거동 및 압력 매개변수가 정해진 오차 한계 내에서 정상 유지되고 있습니다. 표준 정비 주기를 유지하십시오."
 
-        # 한글 컴포넌트화 된 프리미엄 리포트 카드 디자인
+        # 고밀도 인포메이션 그리드 리포트 디자인
         st.markdown(f"""
         <div class='report-card'>
-            <h2>엔진 상태 미션 로그 (MISSION LOG)</h2>
+            <h2>DIAGNOSTIC & MAINTENANCE REPORT</h2>
             <div class='grid-container'>
                 <div class='grid-item'>
-                    <div class='report-label'>엔진 시스템 상태</div>
+                    <div class='report-label'>엔진 시스템 분석 상태</div>
                     <div class='report-value'>{상태}</div>
                 </div>
                 <div class='grid-item'>
-                    <div class='report-label'>연산된 위험 계수</div>
+                    <div class='report-label'>연산된 리스크 가중치</div>
                     <div class='report-value'>{확률*100:.2f} %</div>
                 </div>
                 <div class='grid-item'>
-                    <div class='report-label'>현재 기록된 운전 사이클</div>
-                    <div class='report-value'>{운전사이클} Cycles</div>
+                    <div class='report-label'>로그된 누적 분석 사이클</div>
+                    <div class='report-value'>{운전사이클} CYCLES</div>
                 </div>
                 <div class='grid-item'>
-                    <div class='report-label'>분석 알고리즘</div>
-                    <div class='report-value' style='color:#00D2FF; font-size:15px;'>Random Forest v1.0</div>
+                    <div class='report-label'>배포 아키텍처</div>
+                    <div class='report-value' style='color:#00E5FF; font-size:16px;'>Random Forest v1.0</div>
                 </div>
                 <div class='grid-item grid-full'>
-                    <div class='report-label'>권장 조치 사항 (ACTION REQUIRED)</div>
-                    <div class='report-value' style='font-size: 15px; font-weight: 500; line-height: 1.5; margin-top: 5px;'>{권고}</div>
+                    <div class='report-label'>엔진 관리 권장 조치사항 (REQUIRED MAINTENANCE ACTION)</div>
+                    <div class='report-value' style='font-size: 13px; font-weight: 400; line-height: 1.6; margin-top: 5px;'>{권고}</div>
                 </div>
             </div>
         </div>

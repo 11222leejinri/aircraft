@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 
 # -------------------------------------------------
 # 페이지 설정
-# -------------------------------------------------
+# ----------------------------------------
 
 st.set_page_config(
     page_title="Aircraft Engine Health Monitoring",

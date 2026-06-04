@@ -19,7 +19,7 @@ st.set_page_config(
 # -------------------------------------------------
 st.markdown("""
 <style>
-/* 전체 배경 설정 (정밀 계측 장비 표준 화이트 테마) */
+/* 전체 배경 설정 */
 .stApp {
     background-color: #F8FAFC; 
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -104,45 +104,64 @@ st.markdown("""
     border: 1px solid #FDE68A;
 }
 
-/* 버튼 공통 스타일 디자인 */
+/* -------------------------------------------------
+   버튼 컴포넌트 전면 리디자인 (입체감 및 시인성 강화)
+   ------------------------------------------------- */
 .stButton button {
     width: 100%;
-    height: 50px;
-    font-size: 15px;
-    font-weight: 600;
+    height: 54px;
+    font-size: 16px;
+    font-weight: 700;
     letter-spacing: 0.5px;
-    border: none;
-    border-radius: 4px;
-    transition: all 0.2s ease;
+    border-radius: 6px;
+    transition: all 0.2s ease-in-out;
     margin-top: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 기본 입체감 그림자 추가 */
 }
 
-/* 진단 시퀀스 가동 버튼 (딥블루) */
+/* 1. 단일 진단 시퀀스 가동 버튼 (선명한 네이비 블루 계열) */
 div[data-testid="stSidebarCollapse"] + div .stButton:nth-of-type(1) button,
 .main-diag-btn button {
-    background-color: #1E3A8A;
-    color: #FFFFFF;
+    background-color: #1E3A8A !important;
+    color: #FFFFFF !important;
+    border: 2px solid #1D4ED8 !important;
 }
 .main-diag-btn button:hover {
-    background-color: #1D4ED8;
+    background-color: #1D4ED8 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(29, 78, 216, 0.3) !important;
 }
 
-/* 시뮬레이션 시작 버튼 (에메랄드 그린) */
+/* 2. 실시간 비행 시뮬레이션 시작 버튼 (시인성이 높은 강조 초록색) */
 .sim-start-btn button {
-    background-color: #10B981;
-    color: #FFFFFF;
+    background-color: #10B981 !important;
+    color: #FFFFFF !important;
+    border: 2px solid #059669 !important;
 }
 .sim-start-btn button:hover {
-    background-color: #059669;
+    background-color: #059669 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(5, 150, 105, 0.3) !important;
 }
 
-/* 시뮬레이션 중단 버튼 (다크 그레이) */
+/* 3. 시뮬레이션 중단 버튼 (명확한 경고용 연한 그레이/레드 조합) */
 .sim-stop-btn button {
-    background-color: #475569;
-    color: #FFFFFF;
+    background-color: #64748B !important;
+    color: #FFFFFF !important;
+    border: 2px solid #475569 !important;
 }
 .sim-stop-btn button:hover {
-    background-color: #334155;
+    background-color: #EF4444 !important; /* 마우스 올리면 붉은색으로 변경되어 직관성 향상 */
+    border-color: #DC2626 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(239, 68, 68, 0.3) !important;
+}
+
+/* 클릭했을 때의 눌림 효과 */
+.stButton button:active {
+    transform: translateY(1px) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
 }
 
 /* 파라미터 슬라이더 레이블 및 수치 색상 설정 */
@@ -199,24 +218,21 @@ st.markdown("<h3>엔진 구동 매개변수 설정</h3>", unsafe_allow_html=True
 
 col1, col2 = st.columns(2)
 
-# 시뮬레이션이 구동 중일 때는 값이 동적으로 변하고, 아닐 때는 사용자가 슬라이더로 제어합니다.
 if st.session_state.sim_running:
-    # 사이클이 증가함에 따라 고장 위험 징후를 모사하도록 센서값에 가중치 부여
     current_cycle = st.session_state.sim_cycle
-    base_factor = (current_cycle - 150) / 100.0  # 갈수록 노후화 유도
+    base_factor = (current_cycle - 150) / 100.0
     
     운전사이클 = current_cycle
     센서2 = 641.0 + base_factor * random.uniform(0.1, 0.5)
     센서3 = 1580.0 + base_factor * random.uniform(5.0, 15.0)
     센서4 = 1400.0 + base_factor * random.uniform(3.0, 8.0)
-    센서7 = 550.0 - base_factor * random.uniform(1.0, 3.0)      # 압력 저하 모사
+    센서7 = 550.0 - base_factor * random.uniform(1.0, 3.0)
     센서11 = 2400.0 + base_factor * random.uniform(5.0, 12.0)
-    센서12 = 8150.0 - base_factor * random.uniform(10.0, 25.0)  # 압력 저하 모사
+    센서12 = 8150.0 - base_factor * random.uniform(10.0, 25.0)
     센서15 = 8.5 + base_factor * random.uniform(0.05, 0.15)
     센서20 = 40.0 - base_factor * random.uniform(0.1, 0.4)
     센서21 = 23.0 - base_factor * random.uniform(0.1, 0.3)
     
-    # 시뮬레이션 모드일 때 고정 표시 (슬라이더 UI 대신 텍스트 안내 대체 가능하나 레이아웃 유지를 위해 비활성화 느낌으로 노출)
     st.info(f"실시간 비행 시뮬레이션 가동 중: 누적 구동 사이클 {운전사이클} 진행 중")
 else:
     with col1:
@@ -233,11 +249,10 @@ else:
         센서20 = st.slider("센서 20 (고압 터빈 블리드 유량)", 35.0, 50.0, 40.0)
         센서21 = st.slider("센서 21 (저압 터빈 블리드 유량)", 20.0, 30.0, 23.0)
         
-        # 슬라이더 조작 시 세션의 사이클 기억값도 연동 업데이트
         st.session_state.sim_cycle = 운전사이클
 
 # -------------------------------------------------
-# 컨트롤 버튼 레이아웃 변경 (진단 / 시뮬레이션 제어)
+# 컨트롤 버튼 레이아웃 (정비 전용 입체 버튼 클래스 주입)
 # -------------------------------------------------
 st.markdown("<br>", unsafe_allow_html=True)
 btn_col1, btn_col2, btn_col3 = st.columns(3)
@@ -293,7 +308,7 @@ radar.update_layout(
 st.plotly_chart(radar, use_container_width=True)
 
 # -------------------------------------------------
-# 진단 연산 처리 영역 (단일 진단 클릭 혹은 시뮬레이션 동작 중일 때 표출)
+# 진단 연산 처리 영역
 # -------------------------------------------------
 if execute_diag or st.session_state.sim_running:
     
@@ -309,9 +324,7 @@ if execute_diag or st.session_state.sim_running:
         except:
             확률 = 0.5
     else:
-        # 가상 머신러닝 연산 모사 로직
         결과 = 1 if 운전사이클 > 220 else 0
-        # 사이클 증가 및 센서 변화에 연동되도록 가상 확률 모델링
         확률 = min(0.98, max(0.02, (운전사이클 - 50) / 220.0 + random.uniform(-0.02, 0.02)))
 
     st.markdown("<br><hr style='border-color: #E2E8F0;'><br>", unsafe_allow_html=True)
@@ -320,7 +333,6 @@ if execute_diag or st.session_state.sim_running:
     res_col1, res_col2 = st.columns([1.1, 1])
 
     with res_col1:
-        # 화이트 테마 전용 게이지 차트
         gauge = go.Figure(
             go.Indicator(
                 mode="gauge+number",
@@ -334,9 +346,9 @@ if execute_diag or st.session_state.sim_running:
                     'borderwidth': 1,
                     'bordercolor': "#CBD5E1",
                     'steps': [
-                        {'range': [0, 40], 'color': '#10B981'},   # 정상
-                        {'range': [40, 70], 'color': '#F59E0B'},  # 유의
-                        {'range': [70, 100], 'color': '#EF4444'}  # 위험
+                        {'range': [0, 40], 'color': '#10B981'},   
+                        {'range': [40, 70], 'color': '#F59E0B'},  
+                        {'range': [70, 100], 'color': '#EF4444'}  
                     ],
                     'threshold': {
                         'line': {'color': "#0F172A", 'width': 3},
@@ -355,7 +367,6 @@ if execute_diag or st.session_state.sim_running:
         st.plotly_chart(gauge, use_container_width=True)
 
     with res_col2:
-        # 상태 코드 매칭
         if 결과 == 1:
             상태 = "<span style='color:#EF4444;'>정비 요망 (Critical)</span>"
             권고 = "<span style='color:#991B1B;'>지침 오버런 징후 및 한계치 초과 결함이 검출되었습니다. 자산 가동 시퀀스를 즉시 중단하고 비계획 정비 지침(AMM)에 따라 정밀 분해 점검을 수행하십시오.</span>"
@@ -363,7 +374,6 @@ if execute_diag or st.session_state.sim_running:
             상태 = "<span style='color:#10B981;'>정상 구동 (Nominal)</span>"
             권고 = "내부 거동 및 압력 매개변수가 규정 오차 범위 내에서 안정적입니다. 정기 표준 정비 주기를 유지하십시오."
 
-        # 리포트 카드 레이아웃 출력
         st.markdown(f"""
         <div class='report-card'>
             <h2>종합 진단 및 정비 리포트</h2>
@@ -392,11 +402,10 @@ if execute_diag or st.session_state.sim_running:
         </div>
         """, unsafe_allow_html=True)
 
-    # 시뮬레이션 가동 중일 경우, 0.5초 대기 후 페이지 리런을 유도하여 실시간 애니메이션 효과 구현
     if st.session_state.sim_running:
         time.sleep(0.5)
         st.session_state.sim_cycle += 1
-        if st.session_state.sim_cycle > 400:  # 최대 한계 도달 시 자동 종료
+        if st.session_state.sim_cycle > 400:  
             st.session_state.sim_running = False
             st.session_state.sim_cycle = 150
         st.rerun()

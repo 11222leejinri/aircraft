@@ -2,8 +2,6 @@ import streamlit as st
 import pandas as pd
 import joblib
 import plotly.graph_objects as go
-import time
-import random
 
 # -------------------------------------------------
 # 페이지 설정
@@ -105,7 +103,7 @@ st.markdown("""
 }
 
 /* -------------------------------------------------
-   버튼 컴포넌트 전면 리디자인 (입체감 및 시인성 강화)
+   진단 가동 버튼 리디자인 (확실한 버튼 형태 및 입체감)
    ------------------------------------------------- */
 .stButton button {
     width: 100%;
@@ -115,50 +113,20 @@ st.markdown("""
     letter-spacing: 0.5px;
     border-radius: 6px;
     transition: all 0.2s ease-in-out;
-    margin-top: 10px;
+    margin-top: 15px;
     cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 기본 입체감 그림자 추가 */
-}
-
-/* 1. 단일 진단 시퀀스 가동 버튼 (선명한 네이비 블루 계열) */
-div[data-testid="stSidebarCollapse"] + div .stButton:nth-of-type(1) button,
-.main-diag-btn button {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     background-color: #1E3A8A !important;
     color: #FFFFFF !important;
     border: 2px solid #1D4ED8 !important;
 }
-.main-diag-btn button:hover {
+
+.stButton button:hover {
     background-color: #1D4ED8 !important;
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(29, 78, 216, 0.3) !important;
 }
 
-/* 2. 실시간 비행 시뮬레이션 시작 버튼 (시인성이 높은 강조 초록색) */
-.sim-start-btn button {
-    background-color: #10B981 !important;
-    color: #FFFFFF !important;
-    border: 2px solid #059669 !important;
-}
-.sim-start-btn button:hover {
-    background-color: #059669 !important;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(5, 150, 105, 0.3) !important;
-}
-
-/* 3. 시뮬레이션 중단 버튼 (명확한 경고용 연한 그레이/레드 조합) */
-.sim-stop-btn button {
-    background-color: #64748B !important;
-    color: #FFFFFF !important;
-    border: 2px solid #475569 !important;
-}
-.sim-stop-btn button:hover {
-    background-color: #EF4444 !important; /* 마우스 올리면 붉은색으로 변경되어 직관성 향상 */
-    border-color: #DC2626 !important;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(239, 68, 68, 0.3) !important;
-}
-
-/* 클릭했을 때의 눌림 효과 */
 .stButton button:active {
     transform: translateY(1px) !important;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
@@ -196,14 +164,6 @@ except:
     st.error("시스템 오류: 핵심 분석 모델 파일(aircraft_model.pkl, aircraft_scaler.pkl)을 로드할 수 없습니다.")
 
 # -------------------------------------------------
-# 시뮬레이션 상태 관리를 위한 세션 상태 초기화
-# -------------------------------------------------
-if 'sim_running' not in st.session_state:
-    st.session_state.sim_running = False
-if 'sim_cycle' not in st.session_state:
-    st.session_state.sim_cycle = 150
-
-# -------------------------------------------------
 # 대시보드 상단 헤더 영역
 # -------------------------------------------------
 st.markdown("""
@@ -218,63 +178,25 @@ st.markdown("<h3>엔진 구동 매개변수 설정</h3>", unsafe_allow_html=True
 
 col1, col2 = st.columns(2)
 
-if st.session_state.sim_running:
-    current_cycle = st.session_state.sim_cycle
-    base_factor = (current_cycle - 150) / 100.0
-    
-    운전사이클 = current_cycle
-    센서2 = 641.0 + base_factor * random.uniform(0.1, 0.5)
-    센서3 = 1580.0 + base_factor * random.uniform(5.0, 15.0)
-    센서4 = 1400.0 + base_factor * random.uniform(3.0, 8.0)
-    센서7 = 550.0 - base_factor * random.uniform(1.0, 3.0)
-    센서11 = 2400.0 + base_factor * random.uniform(5.0, 12.0)
-    센서12 = 8150.0 - base_factor * random.uniform(10.0, 25.0)
-    센서15 = 8.5 + base_factor * random.uniform(0.05, 0.15)
-    센서20 = 40.0 - base_factor * random.uniform(0.1, 0.4)
-    센서21 = 23.0 - base_factor * random.uniform(0.1, 0.3)
-    
-    st.info(f"실시간 비행 시뮬레이션 가동 중: 누적 구동 사이클 {운전사이클} 진행 중")
-else:
-    with col1:
-        운전사이클 = st.slider("누적 구동 사이클 (Total Operating Cycles)", 1, 400, st.session_state.sim_cycle)
-        센서2 = st.slider("센서 02 (저압 압축기 출구 온도)", 630.0, 650.0, 641.0)
-        센서3 = st.slider("센서 03 (고압 압축기 출구 온도)", 1500.0, 1700.0, 1580.0)
-        센서4 = st.slider("센서 04 (저압 터빈 출구 온도)", 1300.0, 1450.0, 1400.0)
-        센서7 = st.slider("센서 07 (고압 압축기 출구 압력)", 500.0, 600.0, 550.0)
+with col1:
+    운전사이클 = st.slider("누적 구동 사이클 (Total Operating Cycles)", 1, 400, 150)
+    센서2 = st.slider("센서 02 (저압 압축기 출구 온도)", 630.0, 650.0, 641.0)
+    센서3 = st.slider("센서 03 (고압 압축기 출구 온도)", 1500.0, 1700.0, 1580.0)
+    센서4 = st.slider("센서 04 (저압 터빈 출구 온도)", 1300.0, 1450.0, 1400.0)
+    센서7 = st.slider("센서 07 (고압 압축기 출구 압력)", 500.0, 600.0, 550.0)
 
-    with col2:
-        센서11 = st.slider("센서 11 (고압 터빈 로터 속도)", 2300.0, 2500.0, 2400.0)
-        센서12 = st.slider("센서 12 (바이패스 덕트 압력)", 8000.0, 8500.0, 8150.0)
-        센서15 = st.slider("센서 15 (바이패스 비율)", 7.0, 10.0, 8.5)
-        센서20 = st.slider("센서 20 (고압 터빈 블리드 유량)", 35.0, 50.0, 40.0)
-        센서21 = st.slider("센서 21 (저압 터빈 블리드 유량)", 20.0, 30.0, 23.0)
-        
-        st.session_state.sim_cycle = 운전사이클
+with col2:
+    센서11 = st.slider("센서 11 (고압 터빈 로터 속도)", 2300.0, 2500.0, 2400.0)
+    센서12 = st.slider("센서 12 (바이패스 덕트 압력)", 8000.0, 8500.0, 8150.0)
+    센서15 = st.slider("센서 15 (바이패스 비율)", 7.0, 10.0, 8.5)
+    센서20 = st.slider("센서 20 (고압 터빈 블리드 유량)", 35.0, 50.0, 40.0)
+    센서21 = st.slider("센서 21 (저압 터빈 블리드 유량)", 20.0, 30.0, 23.0)
 
 # -------------------------------------------------
-# 컨트롤 버튼 레이아웃 (정비 전용 입체 버튼 클래스 주입)
+# 단일 진단 가동 버튼 (중앙 집중 레이아웃)
 # -------------------------------------------------
 st.markdown("<br>", unsafe_allow_html=True)
-btn_col1, btn_col2, btn_col3 = st.columns(3)
-
-with btn_col1:
-    st.markdown('<div class="main-diag-btn">', unsafe_allow_html=True)
-    execute_diag = st.button("단일 진단 시퀀스 가동")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with btn_col2:
-    st.markdown('<div class="sim-start-btn">', unsafe_allow_html=True)
-    if st.button("실시간 비행 시뮬레이션 시작"):
-        st.session_state.sim_running = True
-        st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with btn_col3:
-    st.markdown('<div class="sim-stop-btn">', unsafe_allow_html=True)
-    if st.button("시뮬레이션 중단"):
-        st.session_state.sim_running = False
-        st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
+execute_diag = st.button("진단 시퀀스 가동")
 
 # -------------------------------------------------
 # 센서 레이더 차트 분석 시각화
@@ -308,9 +230,9 @@ radar.update_layout(
 st.plotly_chart(radar, use_container_width=True)
 
 # -------------------------------------------------
-# 진단 연산 처리 영역
+# 진단 연산 처리 영역 (버튼 클릭 시에만 발생)
 # -------------------------------------------------
-if execute_diag or st.session_state.sim_running:
+if execute_diag:
     
     if model_loaded:
         입력값 = pd.DataFrame(
@@ -324,8 +246,8 @@ if execute_diag or st.session_state.sim_running:
         except:
             확률 = 0.5
     else:
-        결과 = 1 if 운전사이클 > 220 else 0
-        확률 = min(0.98, max(0.02, (운전사이클 - 50) / 220.0 + random.uniform(-0.02, 0.02)))
+        결과 = 1 if 운전사이클 > 200 else 0
+        확률 = 0.51 if 운전사이클 == 150 else 운전사이클 / 400.0
 
     st.markdown("<br><hr style='border-color: #E2E8F0;'><br>", unsafe_allow_html=True)
     st.markdown("<h3>시스템 종합 진단 결과</h3>", unsafe_allow_html=True)
@@ -401,11 +323,3 @@ if execute_diag or st.session_state.sim_running:
             </div>
         </div>
         """, unsafe_allow_html=True)
-
-    if st.session_state.sim_running:
-        time.sleep(0.5)
-        st.session_state.sim_cycle += 1
-        if st.session_state.sim_cycle > 400:  
-            st.session_state.sim_running = False
-            st.session_state.sim_cycle = 150
-        st.rerun()

@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 
 # -------------------------------------------------
 # 페이지 설정
-# ----------------------------------------
+# -------------------------------------------------
 
 st.set_page_config(
     page_title="Aircraft Engine Health Monitoring",
@@ -145,7 +145,6 @@ h2, h3 {
 # -------------------------------------------------
 # 모델 불러오기
 # -------------------------------------------------
-# 실제 실행을 위해서는 아래 파일들이 같은 경로에 있어야 합니다.
 try:
     모델 = joblib.load("aircraft_model.pkl")
     스케일러 = joblib.load("aircraft_scaler.pkl")
@@ -209,7 +208,7 @@ radar.add_trace(
         ],
         theta=["S2", "S3", "S4", "S7", "S11", "S12", "S15", "S20", "S21"],
         fill='toself',
-        fillcolor='rgba(0, 174, 239, 0.15)', /* 약간의 투명도 있는 블루 */
+        fillcolor='rgba(0, 174, 239, 0.15)',  # 파이썬 주석 수정 완료
         line=dict(color='#00AEEF', width=2),
         name="Telemetry Data"
     )
@@ -257,7 +256,7 @@ if st.button("INITIATE DIAGNOSTICS"):
         except:
             확률 = 0.5
     else:
-        # 모델이 없을 경우 UI 테스트를 위한 더미 데이터
+        # 모델이 없을 경우 UI 테스트를 위한 더미 데이터 예시
         결과 = 1 if 운전사이클 > 200 else 0
         확률 = 운전사이클 / 400.0
 
@@ -268,7 +267,7 @@ if st.button("INITIATE DIAGNOSTICS"):
 
     with res_col1:
         # -------------------------------------------------
-        # 게이지 차트 (고대비 색상)
+        # 게이지 차트
         # -------------------------------------------------
         gauge = go.Figure(
             go.Indicator(
@@ -278,14 +277,14 @@ if st.button("INITIATE DIAGNOSTICS"):
                 title={'text': "FAILURE PROBABILITY", 'font': {'color': '#888888', 'size': 16, 'family': 'Courier New'}},
                 gauge={
                     'axis': {'range': [0, 100], 'tickwidth': 1, 'tickcolor': "white"},
-                    'bar': {'color': "rgba(0,0,0,0)"}, # 바 자체는 숨김 처리
+                    'bar': {'color': "rgba(0,0,0,0)"},
                     'bgcolor': "#0D0D0D",
                     'borderwidth': 2,
                     'bordercolor': "#333333",
                     'steps': [
-                        {'range': [0, 40], 'color': '#00FF00'},   /* 안전: 형광 그린 */
-                        {'range': [40, 75], 'color': '#FFD700'},  /* 경고: 골드/옐로우 */
-                        {'range': [75, 100], 'color': '#FF0000'}  /* 위험: 퓨어 레드 */
+                        {'range': [0, 40], 'color': '#00FF00'},    # 파이썬 주석 수정 완료
+                        {'range': [40, 75], 'color': '#FFD700'},   # 파이썬 주석 수정 완료
+                        {'range': [75, 100], 'color': '#FF0000'}   # 파이썬 주석 수정 완료
                     ],
                     'threshold': {
                         'line': {'color': "white", 'width': 4},

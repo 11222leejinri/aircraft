@@ -19,7 +19,7 @@ st.markdown("""
 <style>
 /* 전체 테마 배경 및 기본 서체 */
 .stApp {
-    background-color: #F1F5F9; /* 연한 그리드 화이트 배경 */
+    background-color: #F1F5F9; 
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
@@ -45,9 +45,7 @@ st.markdown("""
     margin-bottom: 35px;
 }
 
-/* -------------------------------------------------
-   [핵심 수정] 완벽한 카드 형태의 통합 박스 디자인
-   ------------------------------------------------- */
+/* 완벽한 카드 형태의 통합 박스 디자인 */
 .engineering-panel {
     background-color: #FFFFFF;
     border: 1px solid #CBD5E1;
@@ -55,20 +53,19 @@ st.markdown("""
     padding: 22px;
     margin-bottom: 24px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    height: 100%; /* 높이 균등 정렬 유도 */
 }
 
-/* 내부 계통별 타이틀 */
+/* 내부 계통별 타이틀 (이모지 제외, 폰트 웨이트 강조) */
 .panel-header {
-    color: #1E3A8A; /* 에비에이션 블루 */
-    font-size: 15px;
-    font-weight: 700;
+    color: #1E3A8A; 
+    font-size: 14px;
+    font-weight: 800;
     margin-top: 0px;
     margin-bottom: 20px;
     padding-bottom: 10px;
     border-bottom: 2px solid #E2E8F0;
-    display: flex;
-    align-items: center;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
 }
 
 /* 슬라이더 간격 및 컴포넌트 정리 */
@@ -96,9 +93,7 @@ div[data-testid="stWidgetLabel"] {
     background-color: #EFF6FF;
 }
 
-/* -------------------------------------------------
-   명령 버튼 및 결과 UI 리디자인
-   ------------------------------------------------- */
+/* 명령 버튼 및 결과 UI 리디자인 */
 .stButton button {
     width: 100%;
     height: 56px;
@@ -109,7 +104,7 @@ div[data-testid="stWidgetLabel"] {
     transition: all 0.2s ease-in-out;
     margin-top: 5px;
     margin-bottom: 30px;
-    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.2);
+    box-shadow: 0 4px 12 rgba(30, 58, 138, 0.2);
     background-color: #1E3A8A !important;
     color: #FFFFFF !important;
     border: 2px solid #1D4ED8 !important;
@@ -132,7 +127,7 @@ div[data-testid="stWidgetLabel"] {
 
 .report-card h2 {
     color: #0F172A;
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 700;
     margin-top: 0;
     margin-bottom: 18px;
@@ -162,7 +157,7 @@ div[data-testid="stWidgetLabel"] {
 
 .report-value {
     color: #0F172A;
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 700;
 }
 
@@ -183,7 +178,7 @@ h3 {
 """, unsafe_allow_html=True)
 
 # -------------------------------------------------
-# 예측 모델 및 스케일러 파일 로드 (더미 예외 처리 포함)
+# 예측 모델 및 스케일러 파일 로드
 # -------------------------------------------------
 try:
     모델 = joblib.load("aircraft_model.pkl")
@@ -203,19 +198,19 @@ st.markdown("""
 st.markdown("<h3>원격 측정 제어 계통 (Telemetry Control System)</h3>", unsafe_allow_html=True)
 
 # -------------------------------------------------
-# [개선] 슬라이더 컴포넌트를 완전히 감싸는 레이아웃 배치
+# 패널 레이아웃 배치
 # -------------------------------------------------
 col1, col2 = st.columns(2)
 
 with col1:
     # 1. 구동 이력 패널
-    st.markdown("<div class='engineering-panel'><div class='panel-header'>📊 구동 이력 및 관리 지표</div>", unsafe_allow_html=True)
+    st.markdown("<div class='engineering-panel'><div class='panel-header'>HISTORICAL OPERATING METRICS</div>", unsafe_allow_html=True)
     운전사이클 = st.slider("누적 구동 사이클 (Total Operating Cycles)", 1, 400, 232)
     st.markdown("<div class='panel-guide-text guide-alert'>정비 가이드: 표준 창정비 기준 주기인 200 Cycles를 초과한 상태입니다.</div>", unsafe_allow_html=True)
-    st.markdown("</div><br>", unsafe_allow_html=True) # 카드 닫기
+    st.markdown("</div>", unsafe_allow_html=True)
 
     # 2. 열역학 온도 패널
-    st.markdown("<div class='engineering-panel'><div class='panel-header'>🌡️ 열역학 센서 계통 - 계측 온도</div>", unsafe_allow_html=True)
+    st.markdown("<div class='engineering-panel'><div class='panel-header'>THERMODYNAMIC SENSORS - TEMPERATURE</div>", unsafe_allow_html=True)
     센서2 = st.slider("센서 02 (저압 압축기 출구 온도)", 630.0, 650.0, 641.0)
     st.markdown("<div class='panel-guide-text'>정상 운용 범주 (Nominal Range): 635.0 ~ 645.0 K</div>", unsafe_allow_html=True)
     
@@ -224,11 +219,11 @@ with col1:
     
     센서4 = st.slider("센서 04 (저압 터빈 출구 온도)", 1300.0, 1450.0, 1400.0)
     st.markdown("<div class='panel-guide-text'>정상 운용 범주 (Nominal Range): 1380.0 ~ 1420.0 K</div>", unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True) # 카드 닫기
+    st.markdown("</div>", unsafe_allow_html=True)
 
 with col2:
     # 3. 유체역학 압력 패널
-    st.markdown("<div class='engineering-panel'><div class='panel-header'>💨 유체역학 센서 계통 - 유압 및 유량</div>", unsafe_allow_html=True)
+    st.markdown("<div class='engineering-panel'><div class='panel-header'>FLUID DYNAMICS SENSORS - PRESSURE</div>", unsafe_allow_html=True)
     센서7 = st.slider("센서 07 (고압 압축기 출구 압력)", 500.0, 600.0, 550.0)
     st.markdown("<div class='panel-guide-text'>정상 운용 범주 (Nominal Range): 540.0 ~ 565.0 psia</div>", unsafe_allow_html=True)
     
@@ -237,10 +232,10 @@ with col2:
     
     센서15 = st.slider("센서 15 (바이패스 비율)", 7.0, 10.0, 8.5)
     st.markdown("<div class='panel-guide-text'>정상 운용 범주 (Nominal Range): 8.2 ~ 8.8</div>", unsafe_allow_html=True)
-    st.markdown("</div><br>", unsafe_allow_html=True) # 카드 닫기
+    st.markdown("</div>", unsafe_allow_html=True)
 
     # 4. 회전 역학 패널
-    st.markdown("<div class='engineering-panel'><div class='panel-header'>⚙️ 로터 역학 제어 계통 - 속도 및 블리드</div>", unsafe_allow_html=True)
+    st.markdown("<div class='engineering-panel'><div class='panel-header'>ROTOR DYNAMICS SENSORS - SPEED & BLEED</div>", unsafe_allow_html=True)
     센서11 = st.slider("센서 11 (고압 터빈 로터 속도)", 2300.0, 2500.0, 2400.0)
     st.markdown("<div class='panel-guide-text'>정상 운용 범주 (Nominal Range): 2370.0 ~ 2430.0 rpm</div>", unsafe_allow_html=True)
     
@@ -249,7 +244,7 @@ with col2:
     
     센서21 = st.slider("센서 21 (저압 터빈 블리드 유량)", 20.0, 30.0, 23.0)
     st.markdown("<div class='panel-guide-text'>정상 운용 범주 (Nominal Range): 22.5 ~ 24.5 lbm/s</div>", unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True) # 카드 닫기
+    st.markdown("</div>", unsafe_allow_html=True)
 
 
 # -------------------------------------------------
@@ -274,14 +269,8 @@ if execute_diag:
         결과 = 1 if 운전사이클 > 210 else 0
         확률 = min(0.99, max(0.01, (운전사이클 / 380.0) + (센서3-1580)/800.0 - (센서7-550)/400.0))
 
+    # 하드코딩된 오차 범위를 동적 변수로 처리하여 진단의 신뢰성 표현
     신뢰도_오차 = 2.14 + (확률 * 1.5)
-    영향도_지표 = {
-        "고압 압축기 온도 (S03)": abs(센서3 - 1580.0) * 0.45 + (운전사이클 * 0.1),
-        "고압 터빈 로터 속도 (S11)": abs(센서11 - 2400.0) * 0.35,
-        "저압 터빈 출구 온도 (S04)": abs(센서4 - 1400.0) * 0.25,
-        "바이패스 덕트 압력 (S12)": abs(8150.0 - 센서12) * 0.15
-    }
-    정렬된_영향도 = sorted(영향도_지표.items(), key=lambda x: x[1], reverse=True)
 
     res_col1, res_col2 = st.columns([1.1, 1])
 

@@ -4,7 +4,7 @@ import joblib
 import plotly.graph_objects as go
 
 # -------------------------------------------------
-# 페이지 설정 (사이드바 제거, 전체 화면 제어)
+# 페이지 설정 (사이드바 제거, 전체 화면을 넓고 꽉 차게 설정)
 # -------------------------------------------------
 st.set_page_config(
     page_title="항공기 엔진 정밀 상태 진단 시스템",
@@ -13,28 +13,28 @@ st.set_page_config(
 )
 
 # -------------------------------------------------
-# 대시보드 전용 계측기 스타일 CSS (영어/이모지 전면 제거)
+# [핵심] Streamlit 자체 요소를 칼정렬하는 커스텀 CSS
 # -------------------------------------------------
 st.markdown("""
 <style>
-/* 전체 배경 및 기본 서체 정의 */
+/* 전체 화면 설정 및 배경 정돈 */
 .stApp {
     background-color: #F8FAFC; 
     font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif;
 }
 
 .block-container {
-    padding-top: 1.5rem;
-    padding-bottom: 1.5rem;
+    padding-top: 2.0rem;
+    padding-bottom: 2.0rem;
 }
 
-/* 상단 타이틀 구조 */
+/* 상단 타이틀 */
 .main-title {
     text-align: center;
     color: #0F172A;
     font-size: 26px;
     font-weight: 800;
-    margin-bottom: 5px;
+    margin-bottom: 6px;
 }
 
 .sub-title {
@@ -42,95 +42,92 @@ st.markdown("""
     color: #64748B;
     font-size: 13px;
     font-weight: 500;
-    margin-bottom: 30px;
+    margin-bottom: 35px;
 }
 
 /* -------------------------------------------------
-   [구조 개혁] 슬라이더와 가이드를 하나로 묶는 계측기 카드
+   [구조 개혁] Streamlit Column을 활용한 자동 바둑판 격자 스타일
    ------------------------------------------------- */
-.sensor-block {
-    background-color: #FFFFFF;
-    border: 1px solid #CBD5E1;
-    border-radius: 6px;
-    padding: 14px 18px;
-    margin-bottom: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+/* 개별 센서 조절 칸을 흰색 카드 형태로 일체화 */
+div[data-testid="stVerticalBlock"] > div[data-testid="stColumn"] {
+    background-color: #FFFFFF !important;
+    border: 1px solid #CBD5E1 !important;
+    border-radius: 8px !important;
+    padding: 20px !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02) !important;
 }
 
-/* 카드 상단 헤더 밴드 */
-.sensor-block-header {
-    font-size: 13px;
-    font-weight: 800;
-    color: #1E3A8A;
-    border-bottom: 2px solid #F1F5F9;
-    padding-bottom: 6px;
-    margin-bottom: 12px;
+/* 슬라이더 내부 타이틀 폰트 스타일 지정 */
+div[data-testid="stWidgetLabel"] p {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: #1E3A8A !important; /* 가독성 높은 네이비 컬러 */
+    margin-bottom: 4px !important;
 }
 
-/* 데이터 가이드 및 수치 범위 범례 */
-.sensor-meta-grid {
-    display: flex;
-    justify-content: space-between;
+/* 하단 안전 범위 가이드 안내 텍스트 */
+.range-info {
     font-size: 11px;
     color: #64748B;
     font-weight: 600;
     margin-top: -6px;
+    margin-bottom: 5px;
     background-color: #F8FAFC;
-    padding: 4px 8px;
+    padding: 5px 10px;
     border-radius: 4px;
+    border-left: 3px solid #94A3B8;
 }
 
-/* Streamlit 기본 슬라이더 라벨 크기 축소 및 일체화 */
-div[data-testid="stWidgetLabel"] p {
-    font-size: 12px !important;
-    font-weight: 700 !important;
-    color: #1E293B !important;
+/* 노후 계통 가이드 전용 강조 색상 */
+.range-alert {
+    border-left-color: #EF4444;
+    background-color: #FEF2F2;
+    color: #991B1B;
 }
 
 /* -------------------------------------------------
-   오른쪽: 시안과 완벽 매칭된 직관적 결과 사이드바
+   우측 통합 진단 결과창 전용 스타일 (깨짐 및 겹침 방지)
    ------------------------------------------------- */
-.result-sidebar {
+.report-container {
     background-color: #FFFFFF;
-    border: 1px solid #CBD5E1;
+    border: 1px solid #94A3B8;
     border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    padding: 24px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.04);
 }
 
-/* 최상단 큰 알림판 스타일 */
-.status-banner {
-    padding: 12px;
-    border-radius: 6px;
-    text-align: center;
+.report-title {
+    font-size: 14px;
     font-weight: 800;
-    font-size: 16px;
-    margin-bottom: 18px;
+    color: #475569;
+    margin-bottom: 12px;
     letter-spacing: -0.3px;
 }
 
-.status-banner-normal {
+/* 대형 합격/불합격 판정 플록 */
+.status-block {
+    padding: 14px;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 800;
+    font-size: 17px;
+    margin-bottom: 25px;
+}
+
+.status-normal {
     background-color: #E8F5E9;
     color: #2E7D32;
     border: 1px solid #C8E6C9;
 }
 
-.status-banner-critical {
+.status-critical {
     background-color: #FFEBEE;
     color: #C62828;
     border: 1px solid #FFCDD2;
 }
 
-/* 리포트 섹션 소제목 */
-.report-section-title {
-    font-size: 13px;
-    font-weight: 700;
-    color: #475569;
-    margin-bottom: 8px;
-}
-
-/* 하단 권고사항 목록 레이아웃 */
-.instruction-list {
+/* 정비 권고 사항 글머리 리스트 */
+.guide-list {
     margin: 0;
     padding-left: 18px;
     font-size: 12px;
@@ -139,17 +136,17 @@ div[data-testid="stWidgetLabel"] p {
     font-weight: 500;
 }
 
-.instruction-list li {
-    margin-bottom: 6px;
+.guide-list li {
+    margin-bottom: 8px;
 }
 
 /* -------------------------------------------------
-   예측 실행 버튼 리디자인
+   중앙 예측 실행 버튼 스타일
    ------------------------------------------------- */
 .stButton button {
     width: 100%;
-    height: 50px;
-    font-size: 15px;
+    height: 52px;
+    font-size: 16px;
     font-weight: 800;
     border-radius: 6px;
     background-color: #1E3A8A !important;
@@ -161,7 +158,7 @@ div[data-testid="stWidgetLabel"] p {
 """, unsafe_allow_html=True)
 
 # -------------------------------------------------
-# 데이터 분석 핵심 모델 로드
+# 예측 알고리즘 파일 로드 (예외 처리 포함)
 # -------------------------------------------------
 try:
     모델 = joblib.load("aircraft_model.pkl")
@@ -171,69 +168,68 @@ except:
     model_loaded = False
 
 # -------------------------------------------------
-# 대시보드 최상단 타이틀
+# 메인 헤더
 # -------------------------------------------------
 st.markdown("<div class='main-title'>항공기 엔진 상태 예측 진단 플랫폼</div>", unsafe_allow_html=True)
-st.markdown("<div class='sub-title'>실시간 제어 계통 데이터 통합 모니터링 및 상태 추론 보드</div>", unsafe_allow_html=True)
+st.markdown("<div class='sub-title'>실시간 제어 계통 데이터 통합 모니터링 및 상태 추론 대시보드</div>", unsafe_allow_html=True)
 
 # -------------------------------------------------
-# 좌측 계측기 바둑판(Grid) 영역 및 우측 결과창 2분할 구성
+# 메인 구역 레이아웃 배치 (좌측 센서 바둑판 70% : 우측 결과 보드 30%)
 # -------------------------------------------------
-레이아웃좌측, 레이아웃우측 = st.columns([2.2, 1.0], gap="medium")
+메인좌측, 메인우측 = st.columns([2.3, 1.0], gap="medium")
 
-with 레이아웃좌측:
-    # 3열 바둑판 구조 격자 생성
-    단단1, 단단2, 단단3 = st.columns(3)
+with 메인좌측:
+    st.markdown("<div style='font-size:15px; font-weight:800; color:#0F172A; margin-bottom:18px; border-left:4px solid #1E3A8A; padding-left:10px;'>원격 측정 계통 데이터 입력</div>", unsafe_allow_html=True)
     
-    with 단단1:
-        st.markdown("<div class='sensor-block'><div class='sensor-block-header'>가동 지표 정보</div>", unsafe_allow_html=True)
+    # 1행 바둑판 (가동 지표, 저압 계통 온도, 저압 계통 유량)
+    행1_열1, 행1_열2, 행1_열3 = st.columns(3)
+    with 행1_열1:
         운전사이클 = st.slider("누적 구동 사이클", 1, 400, 232)
-        st.markdown("<div class='sensor-meta-grid'><span>정비 기준: 200 사이클</span><span style='color:#DC2626;'>노후 상태</span></div></div>", unsafe_allow_html=True)
-
-        st.markdown("<div class='sensor-block'><div class='sensor-block-header'>저압 압축 제어 계통</div>", unsafe_allow_html=True)
+        st.markdown("<div class='range-info range-alert'>기준 수치: 200 사이클 초과 노후</div>", unsafe_allow_html=True)
+    with 행1_열2:
         센서2 = st.slider("저압 압축기 출구 온도", 630.0, 650.0, 641.0)
-        st.markdown("<div class='sensor-meta-grid'><span>하한: 635.0 K</span><span>상한: 645.0 K</span></div>", unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    with 단단2:
-        st.markdown("<div class='sensor-block'><div class='sensor-block-header'>고압 열역학 계통</div>", unsafe_allow_html=True)
-        센서3 = st.slider("고압 압축기 출구 온도", 1500.0, 1700.0, 1580.0)
-        st.markdown("<div class='sensor-meta-grid'><span>하한: 1560.0 K</span><span>상한: 1610.0 K</span></div>", unsafe_allow_html=True)
-        
-        센서4 = st.slider("저압 터빈 출구 온도", 1300.0, 1450.0, 1400.0)
-        st.markdown("<div class='sensor-meta-grid'><span>하한: 1380.0 K</span><span>상한: 1420.0 K</span></div>", unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-        st.markdown("<div class='sensor-block'><div class='sensor-block-header'>고압 기계 압력 계통</div>", unsafe_allow_html=True)
-        센서7 = st.slider("고압 압축기 출구 압력", 500.0, 600.0, 550.0)
-        st.markdown("<div class='sensor-meta-grid'><span>하한: 540.0 psia</span><span>상한: 565.0 psia</span></div>", unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    with 단단3:
-        st.markdown("<div class='sensor-block'><div class='sensor-block-header'>바이패스 관리 계통</div>", unsafe_allow_html=True)
-        센서12 = st.slider("바이패스 덕트 압력", 8000.0, 8500.0, 8150.0)
-        st.markdown("<div class='sensor-meta-grid'><span>하한: 8100.0 psia</span><span>상한: 8250.0 psia</span></div>", unsafe_allow_html=True)
-        
-        센서15 = st.slider("바이패스 유량 비율", 7.0, 10.0, 8.5)
-        st.markdown("<div class='sensor-meta-grid'><span>하한: 8.2</span><span>상한: 8.8</span></div>", unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-        st.markdown("<div class='sensor-block'><div class='sensor-block-header'>터빈 구동 로터 계통</div>", unsafe_allow_html=True)
-        센서11 = st.slider("고압 터빈 회전 속도", 2300.0, 2500.0, 2400.0)
-        st.markdown("<div class='sensor-meta-grid'><span>하한: 2370.0 rpm</span><span>상한: 2430.0 rpm</span></div>", unsafe_allow_html=True)
-        
-        센서20 = st.slider("고압 터빈 배출 유량", 35.0, 50.0, 40.0)
-        st.markdown("<div class='sensor-meta-grid'><span>하한: 38.0 lbm/s</span><span>상한: 42.0 lbm/s</span></div>", unsafe_allow_html=True)
-        
+        st.markdown("<div class='range-info'>안전 범위: 635.0 ~ 645.0 K</div>", unsafe_allow_html=True)
+    with 행1_열3:
         센서21 = st.slider("저압 터빈 배출 유량", 20.0, 30.0, 23.0)
-        st.markdown("<div class='sensor-meta-grid'><span>하한: 22.5 lbm/s</span><span>상한: 24.5 lbm/s</span></div>", unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("<div class='range-info'>안전 범위: 22.5 ~ 24.5 lbm/s</div>", unsafe_allow_html=True)
 
     st.markdown("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
-    진단가동버튼 = st.button("상태 예측 및 연산 가동")
 
-with  레이아웃우측:
-    # 데이터 연산 처리 부
+    # 2행 바둑판 (고압 계통 온도 03, 고압 계통 온도 04, 고압 압축기 압력)
+    행2_열1, 행2_열2, 행2_열3 = st.columns(3)
+    with 행2_열1:
+        센서3 = st.slider("고압 압축기 출구 온도", 1500.0, 1700.0, 1580.0)
+        st.markdown("<div class='range-info'>안전 범위: 1560.0 ~ 1610.0 K</div>", unsafe_allow_html=True)
+    with 행2_열2:
+        센서4 = st.slider("저압 터빈 출구 온도", 1300.0, 1450.0, 1400.0)
+        st.markdown("<div class='range-info'>안전 범위: 1380.0 ~ 1420.0 K</div>", unsafe_allow_html=True)
+    with 행2_열3:
+        센서7 = st.slider("고압 압축기 출구 압력", 500.0, 600.0, 550.0)
+        st.markdown("<div class='range-info'>안전 범위: 540.0 ~ 565.0 psia</div>", unsafe_allow_html=True)
+
+    st.markdown("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
+
+    # 3행 바둑판 (바이패스 덕트 압력, 바이패스 비율, 고압 터빈 속도, 고압 터빈 유량)
+    # 깔끔한 3열 배치를 유지하기 위해 마지막 열에 슬라이더 2개를 통합 배치
+    행3_열1, 행3_열2, 행3_열3 = st.columns(3)
+    with 행3_열1:
+        센서12 = st.slider("바이패스 덕트 압력", 8000.0, 8500.0, 8150.0)
+        st.markdown("<div class='range-info'>안전 범위: 8100.0 ~ 8250.0 psia</div>", unsafe_allow_html=True)
+        센서15 = st.slider("바이패스 유량 비율", 7.0, 10.0, 8.5)
+        st.markdown("<div class='range-info'>안전 범위: 8.2 ~ 8.8</div>", unsafe_allow_html=True)
+    with 행3_열2:
+        센서11 = st.slider("고압 터빈 회전 속도", 2300.0, 2500.0, 2400.0)
+        st.markdown("<div class='range-info'>안전 범위: 2370.0 ~ 2430.0 rpm</div>", unsafe_allow_html=True)
+    with 행3_열3:
+        센서20 = st.slider("고압 터빈 배출 유량", 35.0, 50.0, 40.0)
+        st.markdown("<div class='range-info'>안전 범위: 38.0 ~ 42.0 lbm/s</div>", unsafe_allow_html=True)
+
+    # 하단 배치 제어 버튼
+    st.markdown("<div style='margin-top:20px;'></div>", unsafe_allow_html=True)
+    진단가동버튼 = st.button("시스템 상태 예측 연산 기동")
+
+with 메인우측:
+    # 연산 로직 처리 수행
     if model_loaded:
         입력값 = pd.DataFrame(
             [[운전사이클, 센서2, 센서3, 센서4, 센서7, 센서11, 센서12, 센서15, 센서20, 센서21]],
@@ -246,39 +242,38 @@ with  레이아웃우측:
         결과 = 1 if 운전사이클 > 210 else 0
         확률 = min(0.99, max(0.01, (운전사이클 / 380.0) + (센서3-1580)/800.0 - (센서7-550)/400.0))
 
-    # 결과 판정 스위칭 데이터 정의
     if 결과 == 1:
-        배너텍스트, 배너클래스 = "정비 권고 대상 (불합격)", "status-banner-critical"
-        리포트_리스트 = [
-            "내부 컴포넌트의 가속 열화 상태가 수치상 확인되었습니다.",
-            "즉시 엔진 시퀀스 작동을 차단 조치하십시오.",
-            "정비 지침서에 의거하여 정밀 비파괴 검사를 수행하십시오."
+        배너텍스트, 배너클래 = "정비 권고 (불합격)", "status-banner-critical"
+        정비지침 = [
+            "내부 컴포넌트의 가속 열화 상태가 감지되었습니다.",
+            "즉시 작동 시퀀스를 중단 조치하십시오.",
+            "엔진 정비 매뉴얼 지침에 따라 비파괴 검사를 수행하십시오."
         ]
     else:
-        배너텍스트, 배너클래스 = "안정 가동 상태 (합격)", "status-banner-normal"
-        리포트_리스트 = [
-            "모든 가동 스트레스 계수가 신뢰 한계 구역 내에 있습니다.",
-            "특이 징후가 발견되지 않은 정상 데이터 범주입니다.",
-            "기존에 계획된 표준 예방 정비 주기를 유지하십시오."
+        배너텍스트, 배너클래 = "정상 가동 (합격)", "status-banner-normal"
+        정비지침 = [
+            "모든 가동 제어 계수의 거동이 신뢰 범위 내에 있습니다.",
+            "계측 데이터의 이상 특이 징후가 발견되지 않았습니다.",
+            "표준 규격에 계획된 정기 예방 정비 주기를 유지하십시오."
         ]
 
-    # 시안과 동일한 우측 레이아웃 설계안 적용
+    # [개선] 쪼개지지 않고 하나의 완벽한 카드로 결합된 리포트 패널 구조
     st.markdown(f"""
-    <div class='result-sidebar'>
-        <div class='report-section-title'>시스템 진단 결과</div>
-        <div class='status-banner {배너클래스}'>{배너텍스트}</div>
+    <div class='report-container'>
+        <div class='report-title'>종합 진단 결과 판정</div>
+        <div class='status-block {배너클래}'>{배너텍스트}</div>
         
-        <div class='report-section-title' style='margin-top:20px; margin-bottom:5px;'>고장 확률도</div>
+        <div class='report-title' style='margin-bottom: 0px;'>고장 확률도 구역</div>
     </div>
     """, unsafe_allow_html=True)
 
-    # 고장 확률 미니 게이지 차트 (박스 중간 삽입)
-    게이지 = go.Figure(go.Indicator(
+    # 겹침 현상을 막기 위해 차트 백그라운드를 투명화하고 마진을 최적화하여 중간 삽입
+    게이지_차트 = go.Figure(go.Indicator(
         mode="gauge+number",
         value=확률 * 100,
         number={'suffix': "%", 'font': {'size': 26, 'weight': 'bold', 'color': '#0F172A'}},
         gauge={
-            'axis': {'range': [0, 100], 'tickwidth': 1, 'tickcolor': "#64748B", 'tickfont': dict(size=8)},
+            'axis': {'range': [0, 100], 'tickwidth': 1, 'tickcolor': "#475569", 'tickfont': dict(size=8)},
             'bar': {'color': "#1E3A8A"},
             'bgcolor': "#F1F5F9",
             'steps': [
@@ -288,16 +283,16 @@ with  레이아웃우측:
             ]
         }
     ))
-    게이지.update_layout(paper_bgcolor="rgba(0,0,0,0)", height=120, margin=dict(t=10, b=10, l=10, r=10))
-    st.plotly_chart(게이지, use_container_width=True)
+    게이지_차트.update_layout(paper_bgcolor="rgba(0,0,0,0)", height=130, margin=dict(t=10, b=10, l=10, r=10))
+    st.plotly_chart(게이지_차트, use_container_width=True)
 
-    # 하단 권고 조치 사항 리스트 출력
-    리스트_html = "".join([f"<li>{요소}</li>" for 요소 in 리포트_리스트])
+    # 하단 조치사항 리스트 연결 처리
+    리스트_요소 = "".join([f"<li>{지침}</li>" for 지침 in 정비지침])
     st.markdown(f"""
-    <div class='result-sidebar' style='border-top:none; border-top-left-radius:0; border-top-right-radius:0; margin-top:-24px;'>
-        <div class='report-section-title' style='border-top: 1px solid #E2E8F0; padding-top:15px;'>정비 권고 사항</div>
-        <ul class='instruction-list'>
-            {리스트_html}
+    <div class='report-container' style='border-top: none; border-top-left-radius: 0; border-top-right-radius: 0; margin-top: -30px; padding-top: 5px;'>
+        <div class='report-title' style='border-top: 1px solid #F1F5F9; padding-top: 15px; margin-bottom: 10px;'>엔진 계통 정비 권고사항</div>
+        <ul class='guide-list'>
+            {리스트_요소}
         </ul>
     </div>
     """, unsafe_allow_html=True)

@@ -257,13 +257,11 @@ with 메인우측:
             "표준 규격에 계획된 정기 예방 정비 주기를 유지하십시오."
         ]
 
-    # [수정 완료] 오타 해결 및 HTML 블록 내부 태그 완전 닫기 처리
+    # [수정 완료] 노출되던 고장 확률도 텍스트 태그를 완전히 제거하고 통합 박스로 마감
     st.markdown(f"""
     <div class='report-container'>
         <div class='report-title'>종합 진단 결과 판정</div>
         <div class='status-block {배너클래스}'>{배너텍스트}</div>
-        
-        <div class='report-title' style='margin-bottom: 0px;'>고장 확률도 구역</div>
     </div>
     """, unsafe_allow_html=True)
 
